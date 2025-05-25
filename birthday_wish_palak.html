@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Palak!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+    }
+    .wish-container {
+      background: rgba(255,255,255,0.85);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      padding: 40px 32px;
+      text-align: center;
+      max-width: 500px;
+      z-index: 1;
+      position: relative;
+      animation: fadeIn 2s;
+    }
+    h1 {
+      font-size: 2.8rem;
+      color: #ff6f61;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      animation: popIn 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+      /* Glowing effect */
+      text-shadow: 0 0 8px #ffb199, 0 0 16px #ff6f61, 0 0 32px #ffd700;
+    }
+    p {
+      font-size: 1.25rem;
+      color: #333;
+      margin-bottom: 0;
+      line-height: 1.6;
+      animation: fadeInText 2.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      80% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    @keyframes fadeInText {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    /* Confetti styles */
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 10;
+    }
+    /* Sparkling stars */
+    .stars {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .star {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #fff 60%, #ffd700 100%);
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 2s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 0.2; transform: scale(1.4); }
+    }
+    /* Balloons */
+    .balloon {
+      position: fixed;
+      bottom: -120px;
+      width: 60px;
+      height: 80px;
+      z-index: 5;
+      pointer-events: none;
+      animation: floatUp 8s linear infinite;
+    }
+    .balloon .string {
+      position: absolute;
+      left: 50%;
+      top: 70px;
+      width: 2px;
+      height: 40px;
+      background: #aaa;
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-110vh) scale(1.05); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas class="confetti"></canvas>
+  <div class="wish-container" style="position:relative;">
+    <div class="stars"></div>
+    <h1>Happy Birthday, Palak! 🎉</h1>
+    <p>
+      Wishing you a day filled with laughter, love, and all the happiness your heart can hold. May your year ahead be as bright and beautiful as you are. Keep shining, keep smiling, and may all your dreams come true. Have a fantastic birthday, Palak!
+    </p>
+  </div>
+  <!-- Balloons will be added dynamically -->
+  <script>
+    // Confetti animation
+    const canvas = document.querySelector('.confetti');
+    const ctx = canvas.getContext('2d');
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    const confettiColors = [
+      '#ff6f61', '#fcb69f', '#ffd700', '#6ec6ff', '#81c784', '#ba68c8', '#fff176', '#ff8a65'
+    ];
+    const confettiCount = 180;
+    const confetti = [];
+
+    function randomRange(a, b) {
+      return Math.random() * (b - a) + a;
+    }
+
+    function Confetto() {
+      this.x = randomRange(0, W);
+      this.y = randomRange(-H, 0);
+      this.r = randomRange(6, 12);
+      this.d = randomRange(15, 30);
+      this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      this.tilt = randomRange(-10, 10);
+      this.tiltAngleIncremental = randomRange(0.05, 0.12);
+      this.tiltAngle = 0;
+      this.speed = randomRange(2, 5);
+    }
+
+    for (let i = 0; i < confettiCount; i++) {
+      confetti.push(new Confetto());
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < confetti.length; i++) {
+        let c = confetti[i];
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 3, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.d);
+        ctx.stroke();
+      }
+      updateConfetti();
+    }
+
+    function updateConfetti() {
+      for (let i = 0; i < confetti.length; i++) {
+        let c = confetti[i];
+        c.y += c.speed;
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.tilt = Math.sin(c.tiltAngle) * 15;
+        if (c.y > H) {
+          c.x = randomRange(0, W);
+          c.y = randomRange(-20, 0);
+          c.tilt = randomRange(-10, 10);
+        }
+      }
+    }
+
+    function animateConfetti() {
+      drawConfetti();
+      requestAnimationFrame(animateConfetti);
+    }
+    animateConfetti();
+
+    window.addEventListener('resize', () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
+    });
+
+    // Sparkling stars effect
+    const starsContainer = document.querySelector('.stars');
+    function createStar() {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 2) + 's';
+      star.style.width = star.style.height = (6 + Math.random() * 8) + 'px';
+      starsContainer.appendChild(star);
+    }
+    for (let i = 0; i < 24; i++) createStar();
+
+    // Animated balloons
+    const balloonColors = ['#ff6f61', '#ffd700', '#81c784', '#6ec6ff', '#ba68c8', '#ff8a65'];
+    function createBalloon() {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+      balloon.style.left = Math.random() * 90 + 'vw';
+      balloon.style.animationDuration = (7 + Math.random() * 3) + 's';
+      balloon.innerHTML = `<svg width="60" height="80"><ellipse cx="30" cy="40" rx="28" ry="36" fill="${color}"/><ellipse cx="30" cy="70" rx="8" ry="6" fill="#fff" opacity="0.2"/></svg><div class="string"></div>`;
+      document.body.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 10000);
+    }
+    setInterval(createBalloon, 900);
+    // Create a few balloons at start
+    for (let i = 0; i < 6; i++) setTimeout(createBalloon, i * 400);
+  </script>
+</body>
+</html> 
